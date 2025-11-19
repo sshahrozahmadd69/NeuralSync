@@ -10,7 +10,7 @@ interface AppShellProps {
 }
 
 export const AppShell = ({ children }: AppShellProps) => {
-    const { resetTest, getProgress, currentStage } = useTestStore();
+    const { resetTest, getProgress, currentStage, isTestComplete } = useTestStore();
 
     const handleReset = () => {
         if (confirm('Are you sure you want to reset the test? All progress will be lost.')) {
@@ -27,7 +27,7 @@ export const AppShell = ({ children }: AppShellProps) => {
     const progress = getProgress();
 
     return (
-        <div className="min-h-screen w-full bg-neural-bg text-white overflow-x-hidden font-sans selection:bg-neon-teal/30">
+        <div className="min-h-screen w-full text-white overflow-x-hidden font-sans selection:bg-neon-teal/30">
             <AnimatedBackground />
 
             <div className="relative z-10 flex flex-col min-h-screen">
@@ -35,7 +35,7 @@ export const AppShell = ({ children }: AppShellProps) => {
 
                 <header className="w-full p-6 flex justify-between items-center border-b border-white/5 bg-black/20 backdrop-blur-sm">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-teal to-neon-blue shadow-[0_0_15px_rgba(34,211,238,0.5)]" />
+                        <img src="/logo.svg" alt="NeuralSync Logo" className="w-14 h-14" />
                         <h1 className="text-xl font-display font-bold tracking-wide">
                             NEURAL<span className="text-neon-teal">SYNC</span> <span className="text-xs text-neural-muted font-mono ml-2">REDUX v4.0</span>
                         </h1>
@@ -49,7 +49,7 @@ export const AppShell = ({ children }: AppShellProps) => {
                 </header>
 
                 {/* Progress Bar */}
-                {currentStage > 0 && (
+                {currentStage > 0 && !isTestComplete && (
                     <div className="w-full bg-black/40 backdrop-blur-sm border-b border-white/5">
                         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
                             <div className="flex-1 mr-4">

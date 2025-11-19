@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type StageType = 'matrix' | 'stroop' | 'bart' | 'personality' | 'intro' | 'results';
 
@@ -137,16 +137,7 @@ export const useTestStore = create<TestState>()(
         }),
         {
             name: 'neuralsync-storage',
-            storage: {
-                getItem: (name) => {
-                    const str = sessionStorage.getItem(name);
-                    return str ? JSON.parse(str) : null;
-                },
-                setItem: (name, value) => {
-                    sessionStorage.setItem(name, JSON.stringify(value));
-                },
-                removeItem: (name) => sessionStorage.removeItem(name),
-            },
+            storage: createJSONStorage(() => sessionStorage),
         }
     )
 );
