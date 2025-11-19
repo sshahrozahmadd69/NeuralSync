@@ -1,34 +1,30 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { AnimatedBackground } from '../ui/AnimatedBackground';
 import { AdSlotA } from '../ads/AdSlotA';
 import { useTestStore } from '../../store/useTestStore';
 import { NeonButton } from '../ui/NeonButton';
-import { Menu, Home, RotateCcw, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Home, RotateCcw } from 'lucide-react';
 
 interface AppShellProps {
     children: ReactNode;
 }
 
 export const AppShell = ({ children }: AppShellProps) => {
-    const [showMenu, setShowMenu] = useState(false);
     const { resetTest, getProgress, currentStage } = useTestStore();
 
     const handleReset = () => {
         if (confirm('Are you sure you want to reset the test? All progress will be lost.')) {
             resetTest();
-            setShowMenu(false);
         }
     };
 
     const handleHome = () => {
         if (currentStage > 0 && confirm('Return to home? Your progress will be saved.')) {
             resetTest();
-            setShowMenu(false);
-        } else if (currentStage === 0) {
-            setShowMenu(false);
         }
     };
+
+    const progress = getProgress();
 
     return (
         <div className="min-h-screen w-full bg-neural-bg text-white overflow-x-hidden font-sans selection:bg-neon-teal/30">
@@ -44,55 +40,52 @@ export const AppShell = ({ children }: AppShellProps) => {
                             NEURAL<span className="text-neon-teal">SYNC</span> <span className="text-xs text-neural-muted font-mono ml-2">REDUX v4.0</span>
                         </h1>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="text-sm font-mono text-neural-muted hidden md:flex items-center gap-2">
+                    <div className="flex items-center gap-4 text-sm font-mono text-neural-muted">
+                        <div className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            SYSTEM ONLINE
+                            <span className="hidden md:inline">SYSTEM ONLINE</span>
                         </div>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setShowMenu(!showMenu)}
-                            className="p-2 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-colors"
-                        >
-                            {showMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                        </motion.button>
                     </div>
                 </header>
 
-                {/* Navigation Menu */}
-                <AnimatePresence>
-                    {showMenu && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="absolute top-20 right-6 z-50 bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-2xl min-w-[250px]"
-                        >
-                            <div className="space-y-3">
-                                <div className="text-xs font-mono text-neural-muted pb-2 border-b border-white/10">
-                                    PROGRESS: {getProgress()}%
+                {/* Progress Bar */}
+                {currentStage > 0 && (
+                    <div className="w-full bg-black/40 backdrop-blur-sm border-b border-white/5">
+                        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+                            <div className="flex-1 mr-4">
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs font-mono text-neural-muted">PROGRESS</span>
+                                    <span className="text-xs font-mono text-neon-teal">{progress}%</span>
                                 </div>
+                                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-gradient-to-r from-neon-teal to-neon-blue transition-all duration-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
                                 <NeonButton
                                     onClick={handleHome}
                                     variant="secondary"
-                                    className="w-full justify-start"
                                     size="sm"
+                                    className="hidden sm:flex"
                                 >
-                                    <Home className="w-4 h-4 mr-2" /> Return to Home
+                                    <Home className="w-4 h-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">Home</span>
                                 </NeonButton>
                                 <NeonButton
                                     onClick={handleReset}
                                     variant="danger"
-                                    className="w-full justify-start"
                                     size="sm"
                                 >
-                                    <RotateCcw className="w-4 h-4 mr-2" /> Reset Test
+                                    <RotateCcw className="w-4 h-4 sm:mr-2" />
+                                    <span className="hidden sm:inline">Reset</span>
                                 </NeonButton>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        </div>
+                    </div>
+                )}
 
                 <main className="flex-1 flex flex-col p-4 md:p-8">
                     {children}
